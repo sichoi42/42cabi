@@ -44,14 +44,14 @@ const ModalContainer: React.FC<{ modalContents: IModalContents }> = (props) => {
           <ButtonWrapperStyled>
             <ButtonContainer
               onClick={closeModal}
-              text={cancleBtnText || "취소"}
+              text={cancleBtnText ?? "취소"}
               theme="line"
             />
             <ButtonContainer
               onClick={(e) => {
                 onClickProceed!(e);
               }}
-              text={proceedBtnText || "확인"}
+              text={proceedBtnText ?? "확인"}
               theme="fill"
             />
           </ButtonWrapperStyled>
