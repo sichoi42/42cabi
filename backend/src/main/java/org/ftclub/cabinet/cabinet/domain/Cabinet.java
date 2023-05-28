@@ -27,11 +27,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Cabinet {
 
+	/**
+	 * {@link Grid}
+	 */
+	@Embedded
+	Grid grid;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CABINET_ID")
 	private Long cabinetId;
-
 	/**
 	 * 사물함의 상태가 변경될 때 증가하는 버전입니다.
 	 * <p>
@@ -40,42 +44,30 @@ public class Cabinet {
 	@Version
 	@Getter(AccessLevel.NONE)
 	private Long version = 1L;
-
 	/**
 	 * 실물로 표시되는 번호입니다.
 	 */
 	@Column(name = "VISIBLE_NUM")
 	private Integer visibleNum;
-
 	/**
 	 * {@link CabinetStatus}
 	 */
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "STATUS", length = 32, nullable = false)
 	private CabinetStatus status;
-
 	/**
 	 * {@link LentType}
 	 */
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "LENT_TYPE", length = 16, nullable = false)
 	private LentType lentType;
-
 	@Column(name = "MAX_USER", nullable = false)
 	private Integer maxUser;
-
 	/**
 	 * 사물함의 상태에 대한 메모입니다. 주로 고장 사유를 적습니다.
 	 */
 	@Column(name = "STATUS_NOTE", length = 64)
 	private String statusNote;
-
-	/**
-	 * {@link Grid}
-	 */
-	@Embedded
-	Grid grid;
-
 	/**
 	 * 서비스에서 나타내지는 사물함의 제목입니다.
 	 */
@@ -110,6 +102,10 @@ public class Cabinet {
 	public static Cabinet of(Integer visibleNum, CabinetStatus status, LentType lentType,
 			Integer maxUser,
 			Grid grid, CabinetPlace cabinetPlace) {
+		if (visibleNum.equals(null) || !status.isValid() || !lentType.isValid()
+				|| maxUser.equals(null) || !grid.isValid() || !cabinetPlace.isValid()) {
+			throw new IllegalArgumentException("사물함의 필수 정보가 입력되지 않았습니다.");
+		}
 		return new Cabinet(visibleNum, status, lentType, maxUser, grid, cabinetPlace);
 	}
 

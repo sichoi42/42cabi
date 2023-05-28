@@ -8,8 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ftclub.cabinet.exception.DomainException;
+import org.ftclub.cabinet.exception.ExceptionStatus;
 
 /**
  * 사물함들이 위치하는 구역에 대한 엔티티입니다.
@@ -17,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "CABINET_PLACE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class CabinetPlace {
 
@@ -30,7 +34,7 @@ public class CabinetPlace {
 	 */
 	@Embedded
 	private Location location;
-	
+
 	/**
 	 * {@link SectionFormation}
 	 */
@@ -51,7 +55,11 @@ public class CabinetPlace {
 
 	public static CabinetPlace of(Location location, SectionFormation sectionFormation,
 			MapArea mapArea) {
-		return new CabinetPlace(location, sectionFormation, mapArea);
+		CabinetPlace cabinetPlace = new CabinetPlace(location, sectionFormation, mapArea);
+		if (!cabinetPlace.isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
+		return cabinetPlace;
 	}
 
 	@Override
@@ -63,5 +71,11 @@ public class CabinetPlace {
 			return false;
 		}
 		return this.cabinetPlaceId.equals(((CabinetPlace) other).cabinetPlaceId);
+	}
+
+	public boolean isValid() {
+		return location.isValid()
+				&& sectionFormation.isValid()
+				&& mapArea.isValid();
 	}
 }
