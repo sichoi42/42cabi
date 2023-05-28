@@ -17,6 +17,8 @@ import javax.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ftclub.cabinet.exception.DomainException;
+import org.ftclub.cabinet.exception.ExceptionStatus;
 
 /**
  * 사물함 엔티티
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Cabinet {
+
 
 	/**
 	 * {@link Grid}
@@ -44,23 +47,27 @@ public class Cabinet {
 	@Version
 	@Getter(AccessLevel.NONE)
 	private Long version = 1L;
+
 	/**
 	 * 실물로 표시되는 번호입니다.
 	 */
 	@Column(name = "VISIBLE_NUM")
 	private Integer visibleNum;
+
 	/**
 	 * {@link CabinetStatus}
 	 */
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "STATUS", length = 32, nullable = false)
 	private CabinetStatus status;
+
 	/**
 	 * {@link LentType}
 	 */
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "LENT_TYPE", length = 16, nullable = false)
 	private LentType lentType;
+
 	@Column(name = "MAX_USER", nullable = false)
 	private Integer maxUser;
 	/**
@@ -102,11 +109,20 @@ public class Cabinet {
 	public static Cabinet of(Integer visibleNum, CabinetStatus status, LentType lentType,
 			Integer maxUser,
 			Grid grid, CabinetPlace cabinetPlace) {
-		if (visibleNum.equals(null) || !status.isValid() || !lentType.isValid()
-				|| maxUser.equals(null) || !grid.isValid() || !cabinetPlace.isValid()) {
-			throw new IllegalArgumentException("사물함의 필수 정보가 입력되지 않았습니다.");
+		Cabinet cabinet = new Cabinet(visibleNum, status, lentType, maxUser, grid, cabinetPlace);
+		if (!cabinet.isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
 		}
 		return new Cabinet(visibleNum, status, lentType, maxUser, grid, cabinetPlace);
+	}
+
+	public boolean isValid() {
+		return visibleNum != null
+				&& status.isValid()
+				&& lentType.isValid()
+				&& maxUser != null
+				&& grid.isValid()
+				&& cabinetPlace.isValid();
 	}
 
 	public boolean isStatus(CabinetStatus cabinetStatus) {
