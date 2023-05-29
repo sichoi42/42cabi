@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ftclub.cabinet.exception.DomainException;
+import org.ftclub.cabinet.exception.ExceptionStatus;
 
 /**
  * 관리자 엔티티 클래스입니다.
@@ -45,7 +47,14 @@ public class AdminUser {
     }
 
     public static AdminUser of(String email, AdminRole role) {
-        return new AdminUser(email, role);
+        AdminUser adminUser = new AdminUser(email, role);
+        if (!adminUser.isValid())
+            throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+        return adminUser;
+    }
+
+    public boolean isValid() {
+        return email != null && role != null;
     }
 
     @Override

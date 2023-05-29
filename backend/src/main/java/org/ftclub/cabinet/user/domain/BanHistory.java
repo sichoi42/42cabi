@@ -15,6 +15,8 @@ import javax.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ftclub.cabinet.exception.DomainException;
+import org.ftclub.cabinet.exception.ExceptionStatus;
 
 @Entity
 @Table(name = "BAN_HISTORY")
@@ -52,7 +54,17 @@ public class BanHistory {
 
     public static BanHistory of(Date bannedAt, Date unbannedAt, BanType banType,
             Long userId) {
-        return new BanHistory(bannedAt, unbannedAt, banType, userId);
+        BanHistory banHistory = new BanHistory(bannedAt, unbannedAt, banType, userId);
+        if (!banHistory.isValid()) {
+            throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+        }
+        return banHistory;
+    }
+
+    public boolean isValid() {
+        return bannedAt != null
+                && banType != null
+                && userId != null;
     }
 
     @Override

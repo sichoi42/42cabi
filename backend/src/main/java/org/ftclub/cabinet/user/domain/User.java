@@ -15,6 +15,8 @@ import javax.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ftclub.cabinet.exception.DomainException;
+import org.ftclub.cabinet.exception.ExceptionStatus;
 
 @Entity
 @Table(name = "USER")
@@ -53,7 +55,18 @@ public class User {
     }
 
     public static User of(String name, String email, Date blackholedAt, UserRole userRole) {
-        return new User(name, email, blackholedAt, userRole);
+        User user = new User(name, email, blackholedAt, userRole);
+        if (!user.isValid()) {
+            throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+        }
+        return user;
+    }
+
+    public boolean isValid() {
+        return name != null
+                && blackholedAt != null
+                && deletedAt != null
+                && role != null;
     }
 
     @Override
