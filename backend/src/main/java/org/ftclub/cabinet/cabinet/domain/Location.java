@@ -29,15 +29,19 @@ public class Location {
 
 	public static Location of(String building, Integer floor, String section) {
 		Location location = new Location(building, floor, section);
-		if (!location.isValid()) {
-			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
-		}
+		location.validateAndThrow();
 		return location;
 	}
 
-	public boolean isValid() {
-		return building != null
-				&& floor > 0
-				&& section != null;
+	private boolean isValid() {
+		return this.building != null
+				&& this.floor > 0
+				&& this.section != null;
+	}
+
+	public void validateAndThrow() {
+		if (!this.isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
 	}
 }

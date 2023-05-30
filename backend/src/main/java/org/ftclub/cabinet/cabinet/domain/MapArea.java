@@ -34,16 +34,20 @@ public class MapArea {
 
 	public MapArea of(Integer startX, Integer endX, Integer startY, Integer endY) {
 		MapArea mapArea = new MapArea(startX, endX, startY, endY);
-		if (!mapArea.isValid()) {
-			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
-		}
+		mapArea.validateAndThrow();
 		return new MapArea(startX, endX, startY, endY);
 	}
 
-	public boolean isValid() {
+	private boolean isValid() {
 		return startX >= 0
 				&& endX >= 0
 				&& startY >= 0
 				&& endY >= 0;
+	}
+
+	public void validateAndThrow() {
+		if (!this.isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
 	}
 }

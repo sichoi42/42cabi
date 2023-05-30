@@ -25,13 +25,17 @@ public class Grid {
 
 	public static Grid of(Integer row, Integer col) {
 		Grid grid = new Grid(row, col);
-		if (!grid.isValid()) {
-			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
-		}
+		grid.validateAndThrow();
 		return new Grid(row, col);
 	}
 
-	public boolean isValid() {
-		return (this.row > 0 && this.col > 0);
+	private boolean isValid(Grid grid) {
+		return (grid.row > 0 && grid.col > 0);
+	}
+
+	public void validateAndThrow() {
+		if (!this.isValid(this)) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
 	}
 }

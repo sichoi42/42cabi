@@ -28,13 +28,17 @@ public class SectionFormation {
 
 	public static SectionFormation of(Integer width, Integer height) {
 		SectionFormation sectionFormation = new SectionFormation(width, height);
-		if (!sectionFormation.isValid()) {
-			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
-		}
+		sectionFormation.validateAndThrow();
 		return sectionFormation;
 	}
 
-	public boolean isValid() {
+	private boolean isValid() {
 		return width >= 0 && height >= 0;
+	}
+
+	public void validateAndThrow() {
+		if (!this.isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
 	}
 }

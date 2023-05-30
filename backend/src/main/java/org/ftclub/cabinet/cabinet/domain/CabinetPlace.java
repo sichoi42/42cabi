@@ -11,8 +11,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.ftclub.cabinet.exception.DomainException;
-import org.ftclub.cabinet.exception.ExceptionStatus;
 
 /**
  * 사물함들이 위치하는 구역에 대한 엔티티입니다.
@@ -56,9 +54,7 @@ public class CabinetPlace {
 	public static CabinetPlace of(Location location, SectionFormation sectionFormation,
 			MapArea mapArea) {
 		CabinetPlace cabinetPlace = new CabinetPlace(location, sectionFormation, mapArea);
-		if (!cabinetPlace.isValid()) {
-			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
-		}
+		cabinetPlace.validateAndThrow();
 		return cabinetPlace;
 	}
 
@@ -73,9 +69,9 @@ public class CabinetPlace {
 		return this.cabinetPlaceId.equals(((CabinetPlace) other).cabinetPlaceId);
 	}
 
-	public boolean isValid() {
-		return location.isValid()
-				&& sectionFormation.isValid()
-				&& mapArea.isValid();
+	public void validateAndThrow() {
+		this.location.validateAndThrow();
+		this.mapArea.validateAndThrow();
+		this.sectionFormation.validateAndThrow();
 	}
 }

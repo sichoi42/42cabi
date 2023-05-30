@@ -107,8 +107,7 @@ public class Cabinet {
 	}
 
 	public static Cabinet of(Integer visibleNum, CabinetStatus status, LentType lentType,
-			Integer maxUser,
-			Grid grid, CabinetPlace cabinetPlace) {
+			Integer maxUser, Grid grid, CabinetPlace cabinetPlace) {
 		Cabinet cabinet = new Cabinet(visibleNum, status, lentType, maxUser, grid, cabinetPlace);
 		if (!cabinet.isValid()) {
 			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
@@ -116,13 +115,19 @@ public class Cabinet {
 		return new Cabinet(visibleNum, status, lentType, maxUser, grid, cabinetPlace);
 	}
 
-	public boolean isValid() {
+	private boolean isValid() {
 		return visibleNum != null
 				&& status.isValid()
 				&& lentType.isValid()
-				&& maxUser != null
-				&& grid.isValid()
-				&& cabinetPlace.isValid();
+				&& maxUser != null;
+	}
+
+	public void validateAndThrow() {
+		cabinetPlace.validateAndThrow();
+		grid.validateAndThrow();
+		if (!isValid()) {
+			throw new DomainException(ExceptionStatus.INVALID_ARGUMENT);
+		}
 	}
 
 	public boolean isStatus(CabinetStatus cabinetStatus) {
