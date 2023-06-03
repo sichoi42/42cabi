@@ -32,6 +32,10 @@ public class CabinetExceptionHandlerService {
 				.orElseThrow(() -> new ServiceException(ExceptionStatus.NOT_FOUND_CABINET));
 	}
 
+	public Cabinet getCabinetForUpdate(Long cabinetId) {
+		return cabinetRepository.findByIdForUpdate(cabinetId)
+				.orElseThrow(() -> new ServiceException(ExceptionStatus.NOT_FOUND_CABINET));
+	}
 	/**
 	 * 사물함 ID로 동아리 사물함을 찾습니다.
 	 *
@@ -41,6 +45,14 @@ public class CabinetExceptionHandlerService {
 	 */
 	public Cabinet getClubCabinet(Long cabinetId) {
 		Cabinet cabinet = getCabinet(cabinetId);
+		if (!cabinet.isLentType(LentType.CLUB)) {
+			throw new ServiceException(ExceptionStatus.NOT_FOUND_CABINET);
+		}
+		return cabinet;
+	}
+
+	public Cabinet getClubCabinetForUpdate(Long cabinetId) {
+		Cabinet cabinet = getCabinetForUpdate(cabinetId);
 		if (!cabinet.isLentType(LentType.CLUB)) {
 			throw new ServiceException(ExceptionStatus.NOT_FOUND_CABINET);
 		}

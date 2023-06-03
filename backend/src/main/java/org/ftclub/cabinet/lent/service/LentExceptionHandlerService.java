@@ -60,6 +60,10 @@ public class LentExceptionHandlerService {
 				.orElseThrow(() -> new ServiceException(ExceptionStatus.NO_LENT_CABINET));
 	}
 
+	public LentHistory getActiveLentHistoryWithUserIdForUpdate(Long userId) {
+		return lentRepository.findFirstByUserIdAndEndedAtIsNullForUpdate(userId)
+				.orElseThrow(() -> new ServiceException(ExceptionStatus.NO_LENT_CABINET));
+	}
 	/**
 	 * 정책에 대한 결과 상태({@link LentPolicyStatus})에 맞는 적절한 {@link ServiceException}을 throw합니다.
 	 *

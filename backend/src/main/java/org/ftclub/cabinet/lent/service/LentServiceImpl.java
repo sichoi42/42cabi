@@ -71,12 +71,12 @@ public class LentServiceImpl implements LentService {
 		Cabinet cabinet = cabinetExceptionHandler.getClubCabinet(cabinetId);
 		userExceptionHandler.getClubUser(userId);
 		lentExceptionHandler.checkExistedSpace(cabinetId);
+		cabinet.increaseUserCountAndChangeStatus();
 		Date expirationDate = lentPolicy.generateExpirationDate(now, cabinet,
 				Collections.emptyList());
 		LentHistory result =
 				LentHistory.of(now, expirationDate, userId, cabinetId);
 		lentRepository.save(result);
-		cabinet.increaseUserCountAndChangeStatus();
 	}
 
 	/**
@@ -101,13 +101,15 @@ public class LentServiceImpl implements LentService {
 	/**
 	 * {@inheritDoc}
 	 */
-	private LentHistory returnCabinet(Long userId) {
+	private LentHistory returnCabinet(Long userId) { // 매개변수 cabinetId 추가하는거 가능?
 		Date now = DateUtil.getNow();
 		userExceptionHandler.getUser(userId);
+		// 비관적 락을 잡고 들어감
+		// 그렇게 안하면 동일한 사람이 return API를 2번 요청하면 문제가 발생
 		LentHistory lentHistory = lentExceptionHandler.getActiveLentHistoryWithUserId(userId);
 		Cabinet cabinet = cabinetExceptionHandler.getCabinet(lentHistory.getCabinetId());
-		lentHistory.endLent(now);
 		cabinet.decreaseUserCountAndChangeStatus();
+		lentHistory.endLent(now);
 		return lentHistory;
 	}
 }

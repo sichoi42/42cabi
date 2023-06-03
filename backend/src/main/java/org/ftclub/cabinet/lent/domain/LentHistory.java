@@ -135,7 +135,7 @@ public class LentHistory {
 	 * @return 설정이 되어있으면 true 아니면 false
 	 */
 	public boolean isSetExpiredAt() {
-		return !(getExpiredAt() == null || getExpiredAt() == DateUtil.getInfinityDate());
+		return !(getExpiredAt() == null || DateUtil.isInfinite(expiredAt));
 	}
 
 	/**

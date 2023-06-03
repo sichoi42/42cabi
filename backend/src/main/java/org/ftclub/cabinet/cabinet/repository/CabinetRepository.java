@@ -6,9 +6,12 @@ import org.ftclub.cabinet.cabinet.domain.Cabinet;
 import org.ftclub.cabinet.cabinet.domain.CabinetPlace;
 import org.ftclub.cabinet.cabinet.domain.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.LockModeType;
 
 @Repository
 public interface CabinetRepository extends JpaRepository<Cabinet, Long> {
@@ -78,4 +81,9 @@ public interface CabinetRepository extends JpaRepository<Cabinet, Long> {
 	boolean existsBuildingAndFloor(
 			@Param("building") String building,
 			@Param("floor") Integer floor);
+
+//	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+	@Query("select c from Cabinet c where c.cabinetId = :cabinetId")
+	Optional<Cabinet> findByIdForUpdate(Long cabinetId);
 }

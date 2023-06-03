@@ -12,11 +12,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       #      show_sql: true
       #      format_sql: true
       globally_quoted_identifiers: true
-      database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+      database-platform: org.hibernate.dialect.MARIADB5InnoDBDialect
 
   cabinet:
     lent:

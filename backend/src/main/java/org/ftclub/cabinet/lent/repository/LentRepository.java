@@ -5,9 +5,12 @@ import java.util.Optional;
 import org.ftclub.cabinet.lent.domain.LentHistory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.LockModeType;
 
 /**
  * {@link LentHistory}를 가져오기 위한 repository
@@ -31,6 +34,9 @@ public interface LentRepository extends JpaRepository<LentHistory, Long> {
 	 */
 	Optional<LentHistory> findFirstByUserIdAndEndedAtIsNull(@Param("userId") Long userId);
 
+	@Lock(value = LockModeType.PESSIMISTIC_WRITE)
+	@Query("select lh from LentHistory lh where lh.userId=:userId and lh.endedAt is null ")
+	Optional<LentHistory> findFirstByUserIdAndEndedAtIsNullForUpdate(@Param("userId") Long userId);
 	/**
 	 * 유저가 지금까지 빌렸던 {@link LentHistory}들을 가져옵니다. {@link Pageable}이 적용되었습니다.
 	 *

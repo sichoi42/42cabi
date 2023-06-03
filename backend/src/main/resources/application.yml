@@ -22,12 +22,33 @@ spring:
 #로컬 환경
 spring:
   server:
-    port: 2424
+    port: 8080
+    fe-host: https://dev.cabi.42seoul.io
   profiles:
     active: local
   config:
     import: classpath:application-oauth.yml
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3310/test_db
+    username: root
+    password: test_password
+  cabinet:
+    lent:
+      term:
+        private: 21
+        share: 42
+    penalty:
+      day:
+        share: 3
+        padding: 2
 
+    urls:
+      admin-login-callback: ${spring.server.fe-host}/api/admin/auth/login/callback
+      user-login-callback: ${spring.server.fe-host}/api/auth/login/callback
 ---
 
 

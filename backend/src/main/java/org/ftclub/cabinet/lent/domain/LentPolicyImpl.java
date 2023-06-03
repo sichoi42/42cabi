@@ -87,6 +87,8 @@ public class LentPolicyImpl implements LentPolicy {
 			switch (banHistory.getBanType()) {
 				case ALL:
 					return LentPolicyStatus.ALL_BANNED_USER;
+				case PRIVATE:
+					return LentPolicyStatus.PRIVATE_BANNED_USER;
 				case SHARE:
 					if (cabinet.isLentType(LentType.SHARE)) {
 						ret = LentPolicyStatus.SHARE_BANNED_USER;
