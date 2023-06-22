@@ -1,6 +1,7 @@
 package org.ftclub.cabinet.cabinet.domain;
 
-import static org.ftclub.cabinet.exception.ExceptionStatus.*;
+import static org.ftclub.cabinet.exception.ExceptionStatus.INVALID_ARGUMENT;
+import static org.ftclub.cabinet.exception.ExceptionStatus.INVALID_STATUS;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.ftclub.cabinet.exception.DomainException;
-import org.ftclub.cabinet.exception.ServiceException;
 import org.ftclub.cabinet.utils.ExceptionUtil;
 
 /**
@@ -30,6 +30,7 @@ import org.ftclub.cabinet.utils.ExceptionUtil;
 @Table(name = "CABINET")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Cabinet {
 
 	@Id

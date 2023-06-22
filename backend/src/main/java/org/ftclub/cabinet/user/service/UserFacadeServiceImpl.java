@@ -117,15 +117,16 @@ public class UserFacadeServiceImpl implements UserFacadeService {
 		PageRequest pageable = PageRequest.of(page, size);
 		Page<User> users = userOptionalFetcher.findUsersByPartialName(name, pageable);
 		List<UserCabinetDto> userCabinetDtoList = new ArrayList<>();
-		users.toList().stream().forEach(user -> {
+		users.stream().forEach(user -> {
 			BanHistory banHistory = userOptionalFetcher.findRecentActiveBanHistory(
 					user.getUserId(), DateUtil.getNow());
 			UserBlockedInfoDto blockedInfoDto = userMapper.toUserBlockedInfoDto(banHistory, user);
 			Cabinet cabinet = cabinetOptionalFetcher.findLentCabinetByUserId(user.getUserId());
-			List<LentDto> lentDtos = lentOptionalFetcher.findAllActiveLentByCabinetId(
-							cabinet.getCabinetId()).stream().map(
-							lentHistory -> lentMapper.toLentDto(user, lentHistory))
-					.collect(Collectors.toList());
+			List<LentDto> lentDtos = (cabinet == null) ? new ArrayList<>()
+					: lentOptionalFetcher.findAllActiveLentByCabinetId(
+									cabinet.getCabinetId()).stream().map(
+									lentHistory -> lentMapper.toLentDto(user, lentHistory))
+							.collect(Collectors.toList());
 
 			CabinetInfoResponseDto cabinetInfoResponseDto = cabinetMapper.toCabinetInfoResponseDto(
 					cabinet, lentDtos);
