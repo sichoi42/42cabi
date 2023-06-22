@@ -14,9 +14,7 @@ const AdminCabinetLentLog = ({
     <AdminLentLogStyled id="lentInfo">
       <TitleContainer>
         <TitleStyled>대여 기록</TitleStyled>
-        <GoBackButtonStyled onClick={closeLent}>
-          뒤로가기
-        </GoBackButtonStyled>
+        <GoBackButtonStyled onClick={closeLent}>뒤로가기</GoBackButtonStyled>
       </TitleContainer>
       <AdminCabinetLogTable lentLog={logs} />
       <ButtonContainerStyled>
@@ -51,7 +49,8 @@ const PageButtonStyled = styled.div<{
   position: absolute;
   display: ${({ page, totalPage, type }) => {
     if (type == "prev" && page == 0) return "none";
-    if (type == "next" && page == totalPage - 1) return "none";
+    if ((type == "next" && page == totalPage - 1) || totalPage == 0)
+      return "none";
     return "block";
   }};
   ${({ type }) =>
