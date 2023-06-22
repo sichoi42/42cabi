@@ -43,7 +43,8 @@ public interface CabinetMapper {
 	OverdueUserCabinetDto toOverdueUserCabinetDto(LentHistory lentHistory, User user,
 			Cabinet cabinet, Long overdueDays);
 
-	UserCabinetDto toUserCabinetDto(UserBlockedInfoDto userInfo, CabinetDto cabinetInfo);
+	UserCabinetDto toUserCabinetDto(UserBlockedInfoDto userInfo,
+			CabinetInfoResponseDto cabinetInfoResponseDto);
 
 	//To do : CabinetPlace로 바꾸기?
 	BuildingFloorsDto toBuildingFloorsDto(String building, List<Integer> floors);

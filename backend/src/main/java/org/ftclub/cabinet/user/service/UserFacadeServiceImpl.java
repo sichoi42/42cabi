@@ -10,7 +10,8 @@ import org.ftclub.cabinet.cabinet.domain.Cabinet;
 import org.ftclub.cabinet.cabinet.domain.LentType;
 import org.ftclub.cabinet.cabinet.repository.CabinetOptionalFetcher;
 import org.ftclub.cabinet.dto.BlockedUserPaginationDto;
-import org.ftclub.cabinet.dto.CabinetDto;
+import org.ftclub.cabinet.dto.CabinetInfoResponseDto;
+import org.ftclub.cabinet.dto.LentDto;
 import org.ftclub.cabinet.dto.MyCabinetResponseDto;
 import org.ftclub.cabinet.dto.MyProfileResponseDto;
 import org.ftclub.cabinet.dto.OverdueUserCabinetDto;
@@ -23,6 +24,7 @@ import org.ftclub.cabinet.dto.UserProfilePaginationDto;
 import org.ftclub.cabinet.dto.UserSessionDto;
 import org.ftclub.cabinet.lent.repository.LentOptionalFetcher;
 import org.ftclub.cabinet.mapper.CabinetMapper;
+import org.ftclub.cabinet.mapper.LentMapper;
 import org.ftclub.cabinet.mapper.UserMapper;
 import org.ftclub.cabinet.user.domain.AdminRole;
 import org.ftclub.cabinet.user.domain.BanHistory;
@@ -45,6 +47,7 @@ public class UserFacadeServiceImpl implements UserFacadeService {
 	private final UserMapper userMapper;
 	private final CabinetOptionalFetcher cabinetOptionalFetcher;
 	private final CabinetMapper cabinetMapper;
+	private final LentMapper lentMapper;
 
 	@Override
 	public MyProfileResponseDto getMyProfile(UserSessionDto user) {
@@ -119,8 +122,15 @@ public class UserFacadeServiceImpl implements UserFacadeService {
 					user.getUserId(), DateUtil.getNow());
 			UserBlockedInfoDto blockedInfoDto = userMapper.toUserBlockedInfoDto(banHistory, user);
 			Cabinet cabinet = cabinetOptionalFetcher.findLentCabinetByUserId(user.getUserId());
-			CabinetDto cabinetDto = cabinetMapper.toCabinetDto(cabinet);
-			userCabinetDtoList.add(cabinetMapper.toUserCabinetDto(blockedInfoDto, cabinetDto));
+			List<LentDto> lentDtos = lentOptionalFetcher.findAllActiveLentByCabinetId(
+							cabinet.getCabinetId()).stream().map(
+							lentHistory -> lentMapper.toLentDto(user, lentHistory))
+					.collect(Collectors.toList());
+
+			CabinetInfoResponseDto cabinetInfoResponseDto = cabinetMapper.toCabinetInfoResponseDto(
+					cabinet, lentDtos);
+			userCabinetDtoList.add(
+					cabinetMapper.toUserCabinetDto(blockedInfoDto, cabinetInfoResponseDto));
 		});
 		return cabinetMapper.toUserCabinetPaginationDto(userCabinetDtoList, users.getTotalPages());
 	}

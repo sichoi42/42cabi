@@ -45,7 +45,7 @@ public class SearchController {
 	}
 
 	@GetMapping("/users")
-	@AuthGuard(level = ADMIN_ONLY)
+//	@AuthGuard(level = ADMIN_ONLY)
 	public UserCabinetPaginationDto getCabinetsLentInfo(
 			@RequestParam("name") String name,
 			@RequestParam("page") Integer page,

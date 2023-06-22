@@ -10,5 +10,5 @@ public class UserCabinetDto {
 
 	@JsonUnwrapped
 	UserBlockedInfoDto userInfo;
-	CabinetDto cabinetInfo;
+	CabinetInfoResponseDto cabinetInfoResponseDto;
 }
