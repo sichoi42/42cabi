@@ -7,35 +7,23 @@ on:
 jobs:
   backend-CI:
     runs-on: ubuntu-latest
-    # services:
-    #   mariadb:
-    #     image: mariadb
-    #     env:
-    #       MYSQL_DATABASE: test_db
-    #       MYSQL_USER: test_user
-    #       MYSQL_PASSWORD: test_password
-    #       MYSQL_ROOT_PASSWORD: test_password
-    #     ports:
-    #       - 3310:3306
-    #     options: >-
-    #       --health-cmd "mysqladmin status -h 127.0.0.1 -P 3306 -u root -p$MYSQL_ROOT_PASSWORD"
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 6
+    services:
+      mariadb:
+        image: mariadb:10.4.10
+        env:
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+          MYSQL_ROOT_PASSWORD: test_password
+        ports:
+          - 3310:3306
+        options: >-
+          --health-cmd "mysqladmin status -h 127.0.0.1 -P 3306 -u root -p$MYSQL_ROOT_PASSWORD"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - uses: getong/mariadb-action@v1.1
-        with:
-          host port: 3310 # Optional, default value is 3306. The port of host
-          container port: 3307 # Optional, default value is 3306. The port of container
-          character set server: "utf8" # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-          collation server: "utf8_general_ci" # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
-          mariadb version: "latest" # Optional, default value is "latest". The version of the MariaDB
-          mysql database: "test_db" # Optional, default value is "test". The specified database which will be create
-          mysql root password: "test_password" # Required if "mysql user" is empty, default is empty. The root superuser password
-          mysql user: "test_user" # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-          mysql password: "test_password" # Required if "mysql user" exists. The password for the "mysql user"
-
       - name: 체크아웃
         uses: actions/checkout@v2
       - name: DB에 샘플 데이터 삽입
