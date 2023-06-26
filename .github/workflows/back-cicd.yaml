@@ -11,17 +11,18 @@ jobs:
       mariadb:
         image: mariadb
         env:
-          MARIADB_DATABASE: test_db
-          MARIADB_USER: test_user
-          MARIADB_PASSWORD: test_password
-          MARIADB_ROOT_PASSWORD: test_password
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+          MYSQL_ROOT_PASSWORD: test_password
         ports:
           - 3310:3306
         options: >-
-          --health-cmd "mysqladmin ping -P 3306 -ptest_password | grep 'mysqld is alive' || exit 1"
+          --health-cmd "mysqladmin status -h 127.0.0.1 -P 3306 -u root -p$MYSQL_ROOT_PASSWORD"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 6
+
     steps:
       - name: 체크아웃
         uses: actions/checkout@v2
