@@ -37,9 +37,9 @@ jobs:
           < "backend/src/test/resources/database/spring_test_db.sql"
 
       - name: JDK 11 설정
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: "11"
           distribution: "corretto"
 
       - name: Gradle 빌드
