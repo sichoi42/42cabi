@@ -18,7 +18,7 @@ jobs:
         ports:
           - 3310:3306
         options: >-
-          --health-cmd "mysqladmin status -h 127.0.0.1 -P 3306 -u root -p$MYSQL_ROOT_PASSWORD"
+          --health-cmd "mysqladmin status -h 127.0.0.1 -P 3306 -u root -ptest_password"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
-          distribution: "amazon-corretto"
+          distribution: "corretto"
 
       - name: Gradle 빌드
         run: |
