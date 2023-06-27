@@ -1,7 +1,8 @@
 #!/bin/bash
 # Script File for Code Deploy
 
-mkdir -p
+mkdir -p /home/ec2-user/42cabi_spring/backend/build/libs/
+mkdir -p /home/ec2-user/deploy/
 BUILD_JAR=$(ls /home/ec2-user/42cabi_spring/backend/build/libs/*.jar)
 JAR_NAME=$(basename $BUILD_JAR)
 echo "> build 파일명: $JAR_NAME" >> /home/ec2-user/deploy/deploy.log
