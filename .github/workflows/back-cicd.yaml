@@ -105,7 +105,7 @@ jobs:
         run: |
           cd backend
           chmod +x ./gradlew
-          ./gradlew build --exclude-task test --debug
+          ./gradlew build --exclude-task test
         shell: bash
 
       - name: 배포 파일 압축
@@ -128,7 +128,17 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: S3에 배포 파일 업로드
-        run: aws s3 --region ${{ secrets.AWS_REGION }} cp backend/$GITHUB_SHA.zip s3://${{ secrets.AWS_S3_BUCKET_NAME }}/$GITHUB_SHA.zip
+        run: aws s3 --region ${{ secrets.AWS_REGION }} cp backend/$GITHUB_SHA.zip s3://${{ secrets.AWS_S3_DEPLOY_BUCKET_NAME }}/$GITHUB_SHA.zip
+
+      - name: CodeDeploy 트리거
+        run: |
+          aws deploy create-deployment \
+          --application-name test-deploy \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name test-deploy \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=${{ secrets.AWS_S3_DEPLOY_BUCKET_NAME }},bundleType=zip,key=backend/$GITHUB_SHA.zip \
+          --region ${{ secrets.AWS_REGION }} \
 
   # backend-CD-main:
   #   name: deploy-main
