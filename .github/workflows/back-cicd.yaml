@@ -83,7 +83,7 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name cabi-group-test \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=cabi-dev-test,bundleType=zip,key=deploy.zip \
+          --s3-location bucket=cabi-dev-test,bundleType=zip,key=deploy.zip
 
       - name: Main S3에 업로드
         if: ${{ github.ref == 'refs/heads/main' }}

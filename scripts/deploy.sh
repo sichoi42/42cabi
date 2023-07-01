@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p /home/ec2-user/deploy
+mkdir -p /home/ec2-user/deploy/zip/
 echo "> 현재 실행 중인 Docker 컨테이너 pid 확인" >> /home/ec2-user/deploy/deploy.log
 CURRENT_PID=$(docker container ls -q)
 
