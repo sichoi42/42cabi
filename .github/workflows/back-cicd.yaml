@@ -57,29 +57,27 @@ jobs:
           ./gradlew build
         shell: bash
 
-      - name: Dev EC2 서버에 업로드
+      - name: Dev S3에 업로드
         if: ${{ github.ref == 'refs/heads/dev' }}
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST_DEV }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY_NEW }}
-          port: ${{ secrets.PORT }}
-          source: ./backend/build/libs/cabinet-*.jar
-          target: "/home/ec2-user/42cabi_dev/"
-          overwrite: true
+        run: |
+          cd backend
+          zip -r deploy.zip build/libs/cabinet-*.jar
+          aws s3 cp deploy.zip s3://cabi-dev-test
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Main EC2 서버에 업로드
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST_MAIN }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY_NEW }}
-          port: ${{ secrets.PORT }}
-          source: ./backend/build/libs/cabinet-*.jar
-          target: "/home/ec2-user/42cabi_main/"
-          overwrite: true
+        run: |
+          cd backend
+          zip -r deploy.zip build/libs/cabinet-*.jar
+          aws s3 cp deploy.zip s3://cabi-main-test
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
   backend-CD-develop:
     name: deploy-develop
@@ -87,22 +85,15 @@ jobs:
     needs: [backend-CI]
     if: ${{ github.ref == 'refs/heads/dev' }}
     steps:
-      - name: 리모트 쉘 접속
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_DEV }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY_NEW }}
-          port: ${{ secrets.PORT }}
-          script_stop: true
-          script: |
-            source $HOME/.bash_profile
-            echo "해당 리포지토리로 이동"
-            cd $HOME/42cabi_dev
-            echo "리포지토리 pull"
-            git pull origin dev
-            echo "앱 구동"
-            bash ~/script/deploy_java.sh
+      - name: CodeDeploy에 배포
+        run: |
+          aws deploy create-deployment \
+          --application-name cabi-app-test \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name cabi-group-test \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=cabi-dev-test,bundleType=zip,key=deploy.zip \
+          --region ap-northeast-2 \
 
   # backend-CD-main:
   #   name: deploy-main
