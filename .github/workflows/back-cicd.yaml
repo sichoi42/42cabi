@@ -70,7 +70,7 @@ jobs:
         run: |
           cp backend/build/libs/cabinet-*.jar deploy/
           cd deploy
-          zip -r deploy.zip
+          zip -r deploy.zip *
           aws s3 cp deploy.zip s3://cabi-dev-test/deploy.zip
 
       - name: Main EC2 서버에 업로드
