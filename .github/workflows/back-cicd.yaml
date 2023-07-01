@@ -57,27 +57,27 @@ jobs:
           ./gradlew build
         shell: bash
 
+      - name: Configure AWS credentials
+        if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Dev S3에 업로드
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
           cd backend
           zip -r deploy.zip build/libs/cabinet-*.jar
-          aws s3 cp deploy.zip s3://cabi-dev-test
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          aws s3 cp deploy.zip s3://cabi-dev-test/deploy.zip
 
       - name: Main EC2 서버에 업로드
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           cd backend
           zip -r deploy.zip build/libs/cabinet-*.jar
-          aws s3 cp deploy.zip s3://cabi-main-test
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          aws s3 cp deploy.zip s3://cabi-main-test/deploy.zip
 
   backend-CD-develop:
     name: deploy-develop
