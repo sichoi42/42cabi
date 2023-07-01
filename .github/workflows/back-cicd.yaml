@@ -68,34 +68,16 @@ jobs:
       - name: Dev S3에 업로드
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
-          cp backend/build/libs/cabinet-*.jar deploy/
-          cd deploy
-          zip -r deploy.zip *
-          aws s3 cp deploy.zip s3://cabi-dev-test/deploy.zip
+          mkdir -p before-deploy
+          cp scripts/*.sh before-deploy/
+          cp appspec.yml before-deploy/
+          cp build/libs/cabinet-*.jar before-deploy/
+          cd before-deploy && zip -r before-deploy *
+          cd ../ && mkdir -p deploy
+          mv before-deploy/before-deploy.zip deploy/deploy.zip
 
-      - name: Main EC2 서버에 업로드
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: |
-          cp backend/build/libs/cabinet-*.jar deploy/
-          cd deploy
-          zip -r deploy.zip
-          aws s3 cp deploy.zip s3://cabi-main-test/deploy.zip
+          aws s3 cp deploy/deploy.zip s3://cabi-dev-test/deploy.zip
 
-  backend-CD-develop:
-    name: deploy-develop
-    runs-on: ubuntu-latest
-    needs: [backend-CI]
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: CodeDeploy에 배포
-        run: |
           aws deploy create-deployment \
           --application-name cabi-app-test \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
@@ -103,31 +85,22 @@ jobs:
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=cabi-dev-test,bundleType=zip,key=deploy.zip \
 
-  # backend-CD-main:
-  #   name: deploy-main
-  #   runs-on: ubuntu-latest
-  #   needs: [backend-CI]
-  #   if: ${{ github.ref == 'refs/heads/main' }}
-  #   steps:
-  #     - name: 리모트 쉘 접속
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  # host: ${{ secrets.HOST_MAIN }}
-  # username: ${{ secrets.USERNAME }}
-  # key: ${{ secrets.KEY_NEW }}
-  # port: ${{ secrets.PORT }}
-  #         script_stop: true
-  #         script: |
-  #           source $HOME/.bash_profile
-  #           echo "해당 리포지토리로 이동"
-  #           cd $HOME/42cabi_main
-  #           echo "리포지토리 pull"
-  #           git pull origin main
-  #           echo "앱 빌드"
-  #           cd $HOME/42cabi_main/backend
-  #           npm install
-  #           npm run build
-  #           echo "env 파일 복사"
-  #           cp $HOME/42cabi_main.env $HOME/42cabi_main/backend/.env
-  #           echo "앱 배포 (reload)"
-  #           pm2 reload cabi_main
+      - name: Main EC2 서버에 업로드
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          mkdir -p before-deploy
+          cp scripts/*.sh before-deploy/
+          cp appspec.yml before-deploy/
+          cp build/libs/cabinet-*.jar before-deploy/
+          cd before-deploy && zip -r before-deploy *
+          cd ../ && mkdir -p deploy
+          mv before-deploy/before-deploy.zip deploy/deploy.zip
+
+          aws s3 cp deploy/deploy.zip s3://cabi-main-test/deploy.zip
+
+          aws deploy create-deployment \
+          --application-name cabi-app-test \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name cabi-group-test \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=cabi-main-test,bundleType=zip,key=deploy.zip \
