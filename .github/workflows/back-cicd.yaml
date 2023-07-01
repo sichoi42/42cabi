@@ -68,15 +68,17 @@ jobs:
       - name: Dev S3에 업로드
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
-          cd backend
-          zip -r deploy.zip build/libs/cabinet-*.jar
+          cp backend/build/libs/cabinet-*.jar deploy/
+          cd deploy
+          zip -r deploy.zip
           aws s3 cp deploy.zip s3://cabi-dev-test/deploy.zip
 
       - name: Main EC2 서버에 업로드
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          cd backend
-          zip -r deploy.zip build/libs/cabinet-*.jar
+          cp backend/build/libs/cabinet-*.jar deploy/
+          cd deploy
+          zip -r deploy.zip
           aws s3 cp deploy.zip s3://cabi-main-test/deploy.zip
 
   backend-CD-develop:

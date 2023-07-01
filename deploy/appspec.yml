@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/42cabi_dev/backend/build/libs/
+    destination: /home/ec2-user/42cabi_dev/deploy
     overwrite: yes
 
 permissions:
